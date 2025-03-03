@@ -1,13 +1,3 @@
-// Copyright 2023 The MediaPipe Authors.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//      http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 import { GestureRecognizer, FilesetResolver, DrawingUtils } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 const demosSection = document.getElementById("demos");
 let gestureRecognizer;
@@ -16,9 +6,9 @@ let enableWebcamButton;
 let webcamRunning = false;
 const videoHeight = "360px";
 const videoWidth = "480px";
-// Before we can use HandLandmarker class we must wait for it to finish
-// loading. Machine Learning models can be large and take a moment to
-// get everything needed to run.
+
+
+
 const createGestureRecognizer = async () => {
     const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -31,9 +21,8 @@ const createGestureRecognizer = async () => {
     demosSection.classList.remove("invisible");
 };
 createGestureRecognizer();
-/********************************************************************
-// Demo 1: Detect hand gestures in images
-********************************************************************/
+
+
 const imageContainers = document.getElementsByClassName("detectOnClick");
 for (let i = 0; i < imageContainers.length; i++) {
     imageContainers[i].children[0].addEventListener("click", handleClick);
@@ -47,14 +36,15 @@ async function handleClick(event) {
         runningMode = "IMAGE";
         await gestureRecognizer.setOptions({ runningMode: "IMAGE" });
     }
-    // Remove all previous landmarks
+    
+    
     const allCanvas = event.target.parentNode.getElementsByClassName("canvas");
     for (var i = allCanvas.length - 1; i >= 0; i--) {
         const n = allCanvas[i];
         n.parentNode.removeChild(n);
     }
     const results = gestureRecognizer.recognize(event.target);
-    // View results in the console to see their format
+    
     console.log(results);
     if (results.gestures.length > 0) {
         const p = event.target.parentNode.childNodes[3];
@@ -99,19 +89,18 @@ async function handleClick(event) {
         }
     }
 }
-/********************************************************************
-// Demo 2: Continuously grab image from webcam stream and detect it.
-********************************************************************/
+
+
+
 const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("output_canvas");
 const canvasCtx = canvasElement.getContext("2d");
 const gestureOutput = document.getElementById("gesture_output");
-// Check if webcam access is supported.
+
 function hasGetUserMedia() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 }
-// If webcam supported, add event listener to button for when user
-// wants to activate it.
+
 if (hasGetUserMedia()) {
     enableWebcamButton = document.getElementById("webcamButton");
     enableWebcamButton.addEventListener("click", enableCam);
@@ -119,7 +108,7 @@ if (hasGetUserMedia()) {
 else {
     console.warn("getUserMedia() is not supported by your browser");
 }
-// Enable the live webcam view and start detection.
+
 function enableCam(event) {
     if (!gestureRecognizer) {
         alert("Please wait for gestureRecognizer to load");
@@ -133,11 +122,11 @@ function enableCam(event) {
         webcamRunning = true;
         enableWebcamButton.innerText = "Desabilitar Predicciones";
     }
-    // getUsermedia parameters.
+
     const constraints = {
         video: true
     };
-    // Activate the webcam stream.
+
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
         video.srcObject = stream;
         video.addEventListener("loadeddata", predictWebcam);
@@ -147,7 +136,7 @@ let lastVideoTime = -1;
 let results = undefined;
 async function predictWebcam() {
     const webcamElement = document.getElementById("webcam");
-    // Now let's start detecting the stream.
+
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
         await gestureRecognizer.setOptions({ runningMode: "VIDEO" });
@@ -188,7 +177,7 @@ async function predictWebcam() {
     else {
         gestureOutput.style.display = "none";
     }
-    // Call this function again to keep predicting when the browser is ready.
+
     if (webcamRunning === true) {
         window.requestAnimationFrame(predictWebcam);
     }
